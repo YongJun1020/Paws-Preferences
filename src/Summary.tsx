@@ -19,7 +19,11 @@ function getAllTags(cats: Cat[]) {
   const tagSet = new Set<string>();
   for (const cat of cats) {
     if (cat.tags && cat.tags.length > 0) {
-      cat.tags.forEach((t: string) => tagSet.add(t));
+      cat.tags.forEach((t: string) => {
+        if (t && t.trim().length > 0) {
+          tagSet.add(t);
+        }
+      });
     }
   }
   return Array.from(tagSet).sort((a: string, b: string) => a.localeCompare(b));
@@ -194,24 +198,6 @@ export default function Summary({ liked, disliked, onRestart }: SummaryProps) {
                     className="w-full h-full object-cover block transition-transform duration-500 group-hover:scale-110"
                     loading="lazy"
                   />
-                  {cat.tags && cat.tags.length > 0 && (
-                    <div className="absolute bottom-0 left-0 right-0 p-3 pt-8 bg-linear-to-t from-black/80 to-transparent">
-                      <div className="flex flex-wrap gap-1.5 justify-center">
-                        {cat.tags.map((tag: string) => (
-                          <span
-                            key={tag}
-                            className={`px-2 py-0.5 rounded-full text-[0.65rem] font-bold capitalize shadow-sm ${
-                              activeTag === tag
-                                ? viewMode === 'liked' ? 'bg-pink-400 text-white' : 'bg-indigo-400 text-white'
-                                : 'bg-white/30 backdrop-blur-md text-white border border-white/20'
-                            }`}
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/20 transition-opacity">
                     <span className="bg-white/80 rounded-full p-2 text-xl shadow-lg backdrop-blur-sm">🔍</span>
                   </div>
@@ -286,19 +272,19 @@ export default function Summary({ liked, disliked, onRestart }: SummaryProps) {
                 <span className="material-icons-round">close</span>
               </button>
 
-              <div className="relative rounded-3xl overflow-hidden border-4 border-white/50 shadow-2xl pointer-events-auto bg-black/50 w-full flex items-center justify-center">
+              <div className="pointer-events-auto">
                 <img
                   src={previewCat.url}
                   alt="Full preview"
-                  className="max-h-[85vh] w-auto object-contain block"
+                  className="max-h-[70vh] w-auto object-contain block rounded-2xl border-4 border-white/50 shadow-2xl"
                 />
 
                 {previewCat.tags && previewCat.tags.length > 0 && (
-                  <div className="absolute bottom-4 left-4 right-4 flex flex-wrap gap-2 justify-center">
+                  <div className="mt-4 flex flex-wrap gap-2 justify-center">
                     {previewCat.tags.map((tag: string) => (
                       <span
                         key={tag}
-                        className="bg-black/60 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-bold border border-white/20 capitalize"
+                        className="bg-white/20 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-bold border border-white/30 capitalize"
                       >
                         #{tag}
                       </span>

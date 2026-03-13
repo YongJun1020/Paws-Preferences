@@ -31,7 +31,7 @@ async function fetchCats(count: number, tag: string): Promise<Cat[]> {
       cats.push({
         id: cats.length,
         catId: catId,
-        tags: cat.tags || [],
+        tags: (cat.tags || []).filter((t: string) => t && t.trim().length > 0),
         url: `https://cataas.com/cat/${catId}`,
         previewUrl: `https://cataas.com/cat/${catId}`,
       });

@@ -132,7 +132,7 @@ const SwipeCard = forwardRef<SwipeCardRef, SwipeCardProps>(function SwipeCard({ 
 
         {cat.tags && cat.tags.length > 0 && (
           <div className="absolute bottom-12 left-4 right-4 flex flex-wrap gap-1.5 z-2">
-            {cat.tags.map((tag: string) => (
+            {cat.tags.filter((tag: string) => tag && tag.trim().length > 0).map((tag: string) => (
               <span
                 key={tag}
                 className="bg-pink-300/40 backdrop-blur-sm text-white px-2.5 py-0.5 rounded-full text-xs font-bold capitalize"
