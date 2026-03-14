@@ -2,42 +2,42 @@ import { useState, useCallback, useEffect } from 'react';
 import type { Cat } from './types';
 
 async function fetchCats(count: number, tag: string): Promise<Cat[]> {
+  const cats: Cat[] = [];
+  const seenIds = new Set<string>();
   let url = `https://cataas.com/api/cats?limit=${count}`;
-  if (tag && tag !== 'any') {
+  if (tag && tag !== "any") {
     url += `&tags=${encodeURIComponent(tag)}`;
   }
-
   try {
-    const res = await fetch(url);
-    let data = await res.json();
+    while (cats.length < count) {
+      const res = await fetch(url);
+      const data = await res.json();
+      for (const cat of data) {
+        let catData = cat;
+        if (cat.mimetype === "image/gif") {
+          const gifReplacement = await fetch(
+            "https://cataas.com/cat?json=true"
+          );
+          catData = await gifReplacement.json();
+        }
+        const catId = catData.id;
+        if (!catId || seenIds.has(catId)) continue;
+        seenIds.add(catId);
+        cats.push({
+          id: cats.length,
+          catId: catId,
+          tags: (catData.tags || []).filter(
+            (t: string) => t && t.trim().length > 0
+          ),
+          url: `https://cataas.com/cat/${catId}`,
+          previewUrl: `https://cataas.com/cat/${catId}`,
+        });
 
-    if (data.length < count) {
-      const remaining = count - data.length;
-      const fallbackUrl = `https://cataas.com/api/cats?limit=${remaining}`;
-      const fallbackRes = await fetch(fallbackUrl);
-      const fallbackData = await fallbackRes.json();
-      data = [...data, ...fallbackData];
+        if (cats.length >= count) break;
+      }
+      const remaining = count - cats.length;
+      url = `https://cataas.com/api/cats?limit=${remaining}`;
     }
-
-    const seenIds = new Set<string>();
-    const cats: Cat[] = [];
-
-    for (const cat of data) {
-      const catId = cat.id;
-      if (!catId) continue;
-      if (seenIds.has(catId)) continue;
-      seenIds.add(catId);
-
-      cats.push({
-        id: cats.length,
-        catId: catId,
-        tags: (cat.tags || []).filter((t: string) => t && t.trim().length > 0),
-        url: `https://cataas.com/cat/${catId}`,
-        previewUrl: `https://cataas.com/cat/${catId}`,
-      });
-      if (cats.length >= count) break;
-    }
-
     return cats;
   } catch (error) {
     console.error("Failed to fetch cats:", error);

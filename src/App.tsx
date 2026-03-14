@@ -6,6 +6,18 @@ import Summary from './Summary';
 import StartScreen from './StartScreen';
 import HistoryScreen from './HistoryScreen';
 import { AnimatePresence } from 'framer-motion';
+import type { Cat } from './types';
+
+function SwipeCardWithRef({ cat, onSwipeComplete, isTop, cardRef }: { cat: Cat; onSwipeComplete: (dir: string) => void; isTop: boolean; cardRef: React.RefObject<SwipeCardRef> }) {
+  return (
+    <SwipeCard
+      ref={cardRef}
+      cat={cat}
+      onSwipeComplete={onSwipeComplete}
+      isTop={isTop}
+    />
+  );
+}
 
 function App() {
   const {
@@ -123,12 +135,12 @@ function App() {
 
         <AnimatePresence mode="wait">
           {currentCat && (
-            <SwipeCard
-              ref={cardRef}
+            <SwipeCardWithRef
               key={currentCat.id}
               cat={currentCat}
               onSwipeComplete={recordSwipe}
               isTop={true}
+              cardRef={cardRef}
             />
           )}
         </AnimatePresence>
